@@ -1,10 +1,10 @@
 from django.db import models
-from accounts.models import User
+from accounts.models import Users
 from django.utils import timezone
 
 class Account(models.Model):
     account_holder = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='user_account')
+        'accounts.Users', on_delete=models.CASCADE)
     account_number = models.PositiveBigIntegerField( unique=True,blank=True, null=True)
     balance = models.PositiveIntegerField(default=0)
     def __str__(self):
@@ -12,9 +12,9 @@ class Account(models.Model):
 
 class Sender(models.Model):
     sender = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='user_account')
+        'accounts.Users', on_delete=models.CASCADE)
     account = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name='sender_account')
+        Account, on_delete=models.CASCADE)
     account_number = models.PositiveBigIntegerField( unique=True,blank=True, null=True)
 
     def __str__(self):
@@ -22,9 +22,9 @@ class Sender(models.Model):
 
 class Reciever(models.Model):
     reciever = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='user_account')
+        'accounts.Users', on_delete=models.CASCADE)
     account = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name='reciever_account')
+        Account, on_delete=models.CASCADE)
     account_number = models.PositiveBigIntegerField( unique=True,blank=True, null=True)
 
     def __str__(self):
@@ -32,12 +32,12 @@ class Reciever(models.Model):
     
 class Transaction(models.Model):
     sender = models.ForeignKey(
-        Sender, on_delete=models.CASCADE, related_name='sender')
+        Sender, on_delete=models.CASCADE)
     reciever = models.ForeignKey(
-        Reciever, on_delete=models.CASCADE, related_name='reciever')
-    account_number = models.ForeignKey('Account', on_delete=models.CASCADE, related_name='sender')
+        Reciever, on_delete=models.CASCADE)
+    account_number = models.ForeignKey('Account', on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(default=0)
-    trans_date=models.DateTimeField(default=timezone.now())
+    trans_date=models.DateTimeField(default=timezone.now)
     
     def __str__(self):
         return self.trans_date
@@ -47,13 +47,13 @@ class Profile(models.Model):
     picture = models.ImageField(blank=True,null=True)
     username = models.CharField(max_length=200, blank=True, null=True)
     emergency_contact= models.CharField(max_length=200, blank=True, null=True)
-    package= models.ForeignKey('Package', on_delete=models.CASCADE, related_name='user_package')
+    package= models.ForeignKey('Package', on_delete=models.CASCADE)
     medical_conditions= models.CharField( max_length=200, blank=True, null=True)
-    account_number =models.ForeignKey('Account', on_delete=models.CASCADE, related_name='user_account')
-    trip =models.ForeignKey('Trip', on_delete=models.CASCADE,related_name='user_trips')
+    account_number =models.ForeignKey('Account', on_delete=models.CASCADE)
+    trip =models.ForeignKey('Trip', on_delete=models.CASCADE)
     availability=models.BooleanField('available', default=False)
     plate_number=models.CharField(max_length=200, blank=True, null=True)
-    user=models.OneToOneField('User', related_name='profile',on_delete=models.CASCADE)
+    user=models.OneToOneField('accounts.Users',on_delete=models.CASCADE)
 
     def __str__(self):
         return self.username
@@ -64,8 +64,8 @@ class Package(models.Model):
        ( 'regular','regular'),
        ('premium','premium'),
     ]
-    package_choice=models.CharField(choices=CHOICES,default="regular")
-    user = models.ForeignKey('User', related_name='user_package',on_delete=models.CASCADE)
+    package_choice=models.CharField(max_length=200, choices=CHOICES,default="regular")
+    user = models.ForeignKey('accounts.Users',on_delete=models.CASCADE)
 
 
     def __str__(self):
@@ -73,8 +73,8 @@ class Package(models.Model):
 
 
 class Trip(models.Model):
-    trip_date=models.DateTimeField(default=timezone.now())
-    driver = models.ForeignKey('User', related_name='profile',on_delete=models.CASCADE)
+    trip_date=models.DateTimeField(default=timezone.now)
+    driver = models.ForeignKey('accounts.Users', related_name='driver',on_delete=models.CASCADE)
     fee= models.ForeignKey('Transaction', related_name='trip_fee',on_delete=models.CASCADE)
     
 
