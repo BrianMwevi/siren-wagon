@@ -10,12 +10,31 @@ class Account(models.Model):
     def __str__(self):
         return self.account_number
 
+class Sender(models.Model):
+    sender = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user_account')
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name='sender_account')
+    account_number = models.PositiveBigIntegerField( unique=True,blank=True, null=True)
+
+    def __str__(self):
+        return self.sender
+
+class Reciever(models.Model):
+    reciever = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user_account')
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name='reciever_account')
+    account_number = models.PositiveBigIntegerField( unique=True,blank=True, null=True)
+
+    def __str__(self):
+        return self.reciever
     
 class Transaction(models.Model):
     sender = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='sender')
+        Sender, on_delete=models.CASCADE, related_name='sender')
     reciever = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reciever')
+        Reciever, on_delete=models.CASCADE, related_name='reciever')
     account_number = models.ForeignKey('Account', on_delete=models.CASCADE, related_name='sender')
     amount = models.PositiveIntegerField(default=0)
     trans_date=models.DateTimeField(default=timezone.now())

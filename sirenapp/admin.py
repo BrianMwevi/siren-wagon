@@ -6,3 +6,6 @@ admin.site.register(Profile)
 admin.site.register(Trip)
 admin.site.register(Package)
 admin.site.register(Transaction)
+admin.site.register(Reciever)
+admin.site.register(Sender)
+
