@@ -9,8 +9,8 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=200, blank=True, null=True)
     username = models.CharField(max_length=200, blank=True, null=True)
     phone = models.CharField(max_length=200, blank=True, null=True)
-    service_provider = models.BooleanField('Is_lender', default=False)
-    client = models.BooleanField('Is_applicant', default=False)
+    service_provider = models.BooleanField('service_provider', default=False)
+    client = models.BooleanField('client', default=False)
 
     def __str__(self):
         return self.username

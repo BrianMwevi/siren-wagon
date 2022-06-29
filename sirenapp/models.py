@@ -1,7 +1,4 @@
-from datetime import date
-from time import time
 from django.db import models
-from pytz import timezone
 from accounts.models import User
 from django.utils import timezone
 
@@ -35,7 +32,8 @@ class Profile(models.Model):
     medical_conditions= models.CharField( max_length=200, blank=True, null=True)
     account_number =models.ForeignKey('Account', on_delete=models.CASCADE, related_name='user_account')
     trip =models.ForeignKey('Trip', on_delete=models.CASCADE,related_name='user_trips')
-    availability=models.BooleanField
+    availability=models.BooleanField('available', default=False)
+    plate_number=models.CharField(max_length=200, blank=True, null=True)
     user=models.OneToOneField('User', related_name='profile',on_delete=models.CASCADE)
 
     def __str__(self):
