@@ -1,19 +1,45 @@
+import re
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from sirenapp.models import CustomerAccount, Package
 
 
 # Create your models here.
 class Users(AbstractUser):
-
     first_name = models.CharField(max_length=200, blank=True, null=True)
     last_name = models.CharField(max_length=200, blank=True, null=True)
-    username = models.CharField(max_length=200, blank=True, null=True,unique=True)
+    username = models.CharField(
+        max_length=200, blank=True, null=True, unique=True)
+    email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=200, blank=True, null=True)
-    service_provider = models.BooleanField('service_provider', default=False)
-    client = models.BooleanField('client', default=False)
+    account = models.ForeignKey(
+        CustomerAccount, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.username
 
 
-# user.name
+class PatientProfile(models.Model):
+    user = models.OneToOneField(Users, on_delete=models.CASCADE)
+    picture = models.ImageField(blank=True, null=True)
+    emergency_contact = models.ManyToManyField(
+        'EmergencyContact', related_name='emergency_contact')
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    medical_conditions = models.CharField(
+        max_length=200, blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+class EmergencyContact(models.Model):
+    first_name = models.CharField(max_length=55)
+    last_name = models.CharField(max_length=55)
+    email = models.EmailField(max_length=255)
+    phone1 = models.CharField(max_length=255)
+    phone2 = models.CharField(max_length=255, blank=True, null=True)
+    phone3 = models.CharField(max_length=255, blank=True, null=True)
+    relationship = models.CharField(max_length=55)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}: {self.relationship}"
