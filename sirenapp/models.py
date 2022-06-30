@@ -9,6 +9,8 @@ class Hospital(models.Model):
         AUTH_USER_MODEL, related_name='owner', on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=255)
+    patients = models.ManyToManyField(
+        AUTH_USER_MODEL, related_name='patients', blank=True)
     ambulances = models.ManyToManyField(
         'Ambulance', related_name='ambulances', blank=True)
     established_date = models.DateTimeField(auto_now_add=True)
