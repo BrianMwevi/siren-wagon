@@ -56,3 +56,31 @@ class TransactionSerializer(serializers.ModelSerializer):
 
         return account
 
+
+class HospitalSerializer(serializers.HyperlinkedModelSerializer):
+    patients = AppUserSerializer(read_only=True, required=False, many=True)
+    ambulances = serializers.PrimaryKeyRelatedField(
+        read_only=True, required=False, many=True)
+    doctors = serializers.PrimaryKeyRelatedField(
+        read_only=True, required=False, many=True)
+    reviews = serializers.PrimaryKeyRelatedField(
+        read_only=True, required=False, many=True)
+    account = serializers.SerializerMethodField(read_only=True, required=False)
+
+    class Meta:
+        model = Hospital
+        fields = [
+            'id',
+            'name',
+            'location',
+            'patients',
+            'ambulances',
+            'doctors',
+            'reviews',
+            'account',
+            'established_date',
+            'updated_date',
+        ]
+
+    def get_account(self, obj):
+        return obj.account.account_number
