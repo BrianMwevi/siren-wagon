@@ -5,7 +5,7 @@ from sirenapp.models import CustomerAccount, Package
 
 
 # Create your models here.
-class Users(AbstractUser):
+class User(AbstractUser):
     first_name = models.CharField(max_length=200, blank=True, null=True)
     last_name = models.CharField(max_length=200, blank=True, null=True)
     username = models.CharField(
@@ -13,33 +13,23 @@ class Users(AbstractUser):
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=200, blank=True, null=True)
     account = models.ForeignKey(
-        CustomerAccount, blank=True, null=True, on_delete=models.CASCADE)
+        CustomerAccount, blank=True, related_name='account', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.username
 
 
 class PatientProfile(models.Model):
-    user = models.OneToOneField(Users, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="patient")
     picture = models.ImageField(blank=True, null=True)
     emergency_contact = models.ManyToManyField(
         'EmergencyContact', related_name='emergency_contact')
-    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    package = models.ForeignKey(
+        Package, related_name='patient_packages', on_delete=models.CASCADE)
     medical_conditions = models.CharField(
         max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
 
-
-class EmergencyContact(models.Model):
-    first_name = models.CharField(max_length=55)
-    last_name = models.CharField(max_length=55)
-    email = models.EmailField(max_length=255)
-    phone1 = models.CharField(max_length=255)
-    phone2 = models.CharField(max_length=255, blank=True, null=True)
-    phone3 = models.CharField(max_length=255, blank=True, null=True)
-    relationship = models.CharField(max_length=55)
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}: {self.relationship}"
