@@ -57,3 +57,7 @@ class AmbulanceViewset(viewsets.ModelViewSet):
     serializer_class = AmbulanceSerializer
     queryset = Ambulance.objects.all()
 
+
+class ReviewViewset(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
