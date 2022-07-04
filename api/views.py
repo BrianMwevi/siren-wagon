@@ -47,3 +47,8 @@ class HospitalViewset(viewsets.ModelViewSet):
     serializer_class = HospitalSerializer
     queryset = Hospital.objects.all()
 
+
+class TripViewset(viewsets.ModelViewSet):
+    serializer_class = TripSerializer
+    queryset = Trip.objects.all()
+
