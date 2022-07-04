@@ -136,3 +136,18 @@ class DoctorSerializer(serializers.HyperlinkedModelSerializer):
             'phone',
             'ambulance',
         ]
+
+
+class DriverSerializer(serializers.HyperlinkedModelSerializer):
+    trips = TripSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Driver
+        fields = [
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'trips',
+        ]
+
