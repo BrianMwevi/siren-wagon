@@ -1,0 +1,11 @@
+from django.contrib import admin
+from .models import *
+
+admin.site.register(Account)
+admin.site.register(Profile)
+admin.site.register(Trip)
+admin.site.register(Package)
+admin.site.register(Transaction)
+admin.site.register(Reciever)
+admin.site.register(Sender)
+
