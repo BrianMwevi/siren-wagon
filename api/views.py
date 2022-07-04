@@ -52,3 +52,8 @@ class TripViewset(viewsets.ModelViewSet):
     serializer_class = TripSerializer
     queryset = Trip.objects.all()
 
+
+class AmbulanceViewset(viewsets.ModelViewSet):
+    serializer_class = AmbulanceSerializer
+    queryset = Ambulance.objects.all()
+
