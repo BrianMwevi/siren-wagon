@@ -151,3 +151,19 @@ class DriverSerializer(serializers.HyperlinkedModelSerializer):
             'trips',
         ]
 
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user = AppUserSerializer()
+    ambulance = AmbulanceSerializer(read_only=True)
+    hospital = HospitalSerializer(read_only=True)
+
+    class Meta:
+        model = Review
+        fields = [
+            'user',
+            'hospital',
+            'ambulance',
+            'content',
+            'rating',
+            'created_date',
+        ]
