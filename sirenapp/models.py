@@ -29,8 +29,7 @@ class Sender(models.Model):
 class Reciever(models.Model):
     reciever = models.ForeignKey(
         AUTH_USER_MODEL, on_delete=models.CASCADE)
-    account = models.ForeignKey(
-        Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
     account_number = models.PositiveBigIntegerField(
         unique=True, blank=True, null=True)
 
