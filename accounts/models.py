@@ -1,9 +1,10 @@
 from typing import List
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser,BaseUserManager
 
 
 # Create your models here.
+
 class User(AbstractUser):
 
     first_name = models.CharField(max_length=200, blank=True, null=True)
@@ -13,10 +14,10 @@ class User(AbstractUser):
     service_provider = models.BooleanField('service_provider', default=False)
     client = models.BooleanField('client', default=False)
     email = models.CharField(max_length=255, unique=True)
-    username = None
+    username = models.CharField(max_length=255,blank=True, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
 
     
