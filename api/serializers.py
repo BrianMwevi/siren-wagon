@@ -104,3 +104,22 @@ class TripSerializer(serializers.HyperlinkedModelSerializer):
             'completed',
         ]
 
+
+class AmbulanceSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='ambulance-detail')
+    trips = TripSerializer(read_only=True, many=True)
+    ratings = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    driver = AppUserSerializer(read_only=True)
+
+    class Meta:
+        model = Ambulance
+        fields = [
+            'url',
+            'id',
+            'driver',
+            'number_plate',
+            'available',
+            'trips',
+            'ratings',
+        ]
+
