@@ -61,3 +61,8 @@ class AmbulanceViewset(viewsets.ModelViewSet):
 class ReviewViewset(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
+
+
+class DoctorViewset(viewsets.ModelViewSet):
+    serializer_class = DoctorSerializer
+    queryset = Doctor.objects.all()
