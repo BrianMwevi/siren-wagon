@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'cloudinary',
     "rest_framework",
     # 'rest_framework_swagger',
-    'rest_framework.authtoken',
     "corsheaders",
     'knox',
     'accounts',
@@ -64,9 +63,7 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        # 'knox.auth.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
