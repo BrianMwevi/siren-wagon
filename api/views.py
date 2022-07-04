@@ -66,3 +66,8 @@ class ReviewViewset(viewsets.ModelViewSet):
 class DoctorViewset(viewsets.ModelViewSet):
     serializer_class = DoctorSerializer
     queryset = Doctor.objects.all()
+
+
+class DriverViewset(viewsets.ModelViewSet):
+    serializer_class = DriverSerializer
+    queryset = Driver.objects.all()
