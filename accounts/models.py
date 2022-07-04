@@ -33,3 +33,15 @@ class PatientProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+
+class EmergencyContact(models.Model):
+    first_name = models.CharField(max_length=55)
+    last_name = models.CharField(max_length=55)
+    email = models.EmailField(max_length=255)
+    phone1 = models.CharField(max_length=255)
+    phone2 = models.CharField(max_length=255, blank=True, null=True)
+    phone3 = models.CharField(max_length=255, blank=True, null=True)
+    relationship = models.CharField(max_length=55)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}: {self.relationship}"
