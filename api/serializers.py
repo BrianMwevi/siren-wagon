@@ -123,3 +123,16 @@ class AmbulanceSerializer(serializers.HyperlinkedModelSerializer):
             'ratings',
         ]
 
+
+class DoctorSerializer(serializers.HyperlinkedModelSerializer):
+    ambulance = AmbulanceSerializer(read_only=True)
+
+    class Meta:
+        model = Doctor
+        fields = [
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'ambulance',
+        ]
