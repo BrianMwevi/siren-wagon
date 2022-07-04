@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 from api.serializers import AppUserSerializer, HospitalSerializer, ReviewSerializer, TransactionSerializer, TripSerializer, DoctorSerializer, AmbulanceSerializer, DriverSerializer
 from accounts.models import User
@@ -52,10 +53,15 @@ class TripViewset(viewsets.ModelViewSet):
     serializer_class = TripSerializer
     queryset = Trip.objects.all()
 
+    def get_queryset(self):
+        trips = Trip.objects.filter(user=self.request.user)
+        return trips
+
 
 class AmbulanceViewset(viewsets.ModelViewSet):
     serializer_class = AmbulanceSerializer
     queryset = Ambulance.objects.all()
+    permission_classes = []
 
 
 class ReviewViewset(viewsets.ModelViewSet):
