@@ -159,6 +159,10 @@ class Trip(models.Model):
     trip_date = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(default=False)
 
+    def calculate_fees(self):
+        """A method to calculate the transportation charges between the pickup point and the hospital"""
+        pass
+
     def __str__(self):
         return f"{self.pickup} TO {self.destination}"
 
