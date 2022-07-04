@@ -61,7 +61,7 @@ class TripViewset(viewsets.ModelViewSet):
 class AmbulanceViewset(viewsets.ModelViewSet):
     serializer_class = AmbulanceSerializer
     queryset = Ambulance.objects.all()
-    permission_classes = []
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class ReviewViewset(viewsets.ModelViewSet):
