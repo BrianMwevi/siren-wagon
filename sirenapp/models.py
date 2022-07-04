@@ -1,6 +1,8 @@
+from contextlib import nullcontext
 from django.db import models
 from core.settings import AUTH_USER_MODEL
 from django.utils import timezone
+
 
 
 class Account(models.Model):
@@ -33,6 +35,7 @@ class Reciever(models.Model):
         Account, on_delete=models.CASCADE)
     account_number = models.PositiveBigIntegerField(
         unique=True, blank=True, null=True)
+
 
     def __str__(self):
         return self.reciever.username
@@ -69,6 +72,8 @@ class Profile(models.Model):
 
 
 class Package(models.Model):
+    
+    # id = models.IntegerField(primary_key=True)
     CHOICES = [
         ('regular', 'regular'),
         ('premium', 'premium'),
@@ -87,8 +92,8 @@ class Trip(models.Model):
         AUTH_USER_MODEL, related_name='driver', on_delete=models.CASCADE)
     fee = models.ForeignKey(
         'Transaction', related_name='trip_fee', on_delete=models.CASCADE)
-    pickup = models.CharField(max_length=255)
-    destination = models.CharField(max_length=255)
+    pickup = models.CharField(max_length=255,blank=True,null=True)
+    destination = models.CharField(max_length=255, blank=True,null=True)
 
     def __str__(self):
         return self.trip_date
