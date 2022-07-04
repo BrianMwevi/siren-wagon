@@ -84,3 +84,23 @@ class HospitalSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_account(self, obj):
         return obj.account.account_number
+
+
+class TripSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='trips-detail')
+    fee = TransactionSerializer(read_only=True)
+    destination = HospitalSerializer(read_only=True)
+
+    class Meta:
+        model = Trip
+        fields = [
+            'url',
+            'id',
+            'pickup',
+            'destination',
+            'persons',
+            'fee',
+            'trip_date',
+            'completed',
+        ]
+
