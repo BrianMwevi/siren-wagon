@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "rest_framework",
     # 'rest_framework_swagger',
     "corsheaders",
-    'knox',
     'accounts',
     'sirenapp',
     'api',

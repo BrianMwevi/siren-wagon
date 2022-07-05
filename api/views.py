@@ -53,10 +53,6 @@ class TripViewset(viewsets.ModelViewSet):
     serializer_class = TripSerializer
     queryset = Trip.objects.all()
 
-    def get_queryset(self):
-        trips = Trip.objects.filter(user=self.request.user)
-        return trips
-
 
 class AmbulanceViewset(viewsets.ModelViewSet):
     serializer_class = AmbulanceSerializer

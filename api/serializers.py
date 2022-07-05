@@ -1,4 +1,3 @@
-from asyncore import read
 from accounts.models import User
 from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip
 from rest_framework import serializers
