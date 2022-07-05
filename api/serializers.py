@@ -23,6 +23,7 @@ class TripSerializer(serializers.ModelSerializer):
     class Meta:
         model=Trip
         fields= [
+            'id',
             'trip_date',
             'driver',
             'fee',

@@ -26,9 +26,7 @@ class TripViewset(viewsets.ModelViewSet):
     serializer.save(driver=self.request.user)
     
   
-  def update(self,serializer):
-     serializer.save()
-    
+  
 
 
 # @api_view(['GET'])

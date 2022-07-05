@@ -91,7 +91,7 @@ class Trip(models.Model):
     driver = models.ForeignKey(
         AUTH_USER_MODEL, related_name='driver', on_delete=models.CASCADE)
     fee = models.ForeignKey(
-        'Transaction', related_name='trip_fee', on_delete=models.CASCADE)
+        'Transaction', related_name='trip_fee', on_delete=models.CASCADE,null=True)
     pickup = models.CharField(max_length=255,blank=True,null=True)
     destination = models.CharField(max_length=255, blank=True,null=True)
 
