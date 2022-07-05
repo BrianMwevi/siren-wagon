@@ -13,9 +13,9 @@ from rest_framework import viewsets, generics
 from rest_framework import serializers
 
 
-class UserViewset(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# class UserViewset(viewsets.ModelViewSet):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
 
 
 class TransactionsView(generics.ListCreateAPIView):
@@ -32,11 +32,9 @@ class TransactionsView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         """Method to create a new transaction. Checks if the sender has sufficient balance before transacting and raises an exception if the balance is less the amount to be transacted."""
-
         receiver_account_number = self.request.data['account_number']
         sender = self.request.user.customer_account.first()
         transaction_type = self.request.data['transaction_type'].lower()
-
         can_transact = CustomerAccount.can_transact(
             sender.account_number, self.request.data['amount'])
 
@@ -79,7 +77,6 @@ class DriverViewset(viewsets.ModelViewSet):
     queryset = Driver.objects.all()
 
 
-# Create your views here.
 class RegisterView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -92,28 +89,21 @@ class LoginView(APIView):
     def post(self, request):
         email = request.data['email']
         password = request.data['password']
-
         user = User.objects.filter(email=email).first()
-
         if user is None:
             raise AuthenticationFailed('User not found!')
-
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
-
         payload = {
             'id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             'iat': datetime.datetime.utcnow()
         }
-
         token = jwt.encode(payload, 'secret',
                            algorithm='HS256').decode('utf-8')
         response = Response()
         response.set_cookie(key='jwt', value=token, httponly=True)
-        response.data = {
-            'jwt': token
-        }
+        response.data = {'jwt': token}
         return response
 
 
@@ -121,7 +111,5 @@ class LogoutView(APIView):
     def post(self, request):
         response = Response()
         response.delete_cookie('jwt')
-        response.data = {
-            'message': 'success'
-        }
+        response.data = {'message': 'success'}
         return response
