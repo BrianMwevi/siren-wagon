@@ -1,9 +1,9 @@
-from accounts.models import User
-from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip
 from rest_framework import serializers
+from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip
+from accounts.models import User
 
 
-class AppUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='users-detail')
 
     class Meta:
@@ -17,6 +17,17 @@ class AppUserSerializer(serializers.ModelSerializer):
             'email',
             'phone',
         ]
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        instance = self.Meta.model(**validated_data)
+        if password is not None:
+            instance.set_password(password)
+        instance.save()
+        return instance
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -57,7 +68,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class HospitalSerializer(serializers.HyperlinkedModelSerializer):
-    patients = AppUserSerializer(read_only=True, required=False, many=True)
+    patients = UserSerializer(read_only=True, required=False, many=True)
     ambulances = serializers.PrimaryKeyRelatedField(
         read_only=True, required=False, many=True)
     doctors = serializers.PrimaryKeyRelatedField(
@@ -108,7 +119,7 @@ class AmbulanceSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='ambulance-detail')
     trips = TripSerializer(read_only=True, many=True)
     ratings = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-    driver = AppUserSerializer(read_only=True)
+    driver = UserSerializer(read_only=True)
 
     class Meta:
         model = Ambulance
@@ -152,7 +163,7 @@ class DriverSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    user = AppUserSerializer()
+    user = UserSerializer()
     ambulance = AmbulanceSerializer(read_only=True)
     hospital = HospitalSerializer(read_only=True)
 

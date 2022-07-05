@@ -1,7 +1,6 @@
-import re
-from django.db import models
-from django.contrib.auth.models import AbstractUser
 from sirenapp.models import CustomerAccount, Package
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 # Create your models here.
@@ -12,11 +11,17 @@ class User(AbstractUser):
         max_length=200, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=200, blank=True, null=True)
+    password = models.CharField(max_length=255)
+
     account = models.ForeignKey(
         CustomerAccount, blank=True, related_name='account', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.username
+
+
+USERNAME_FIELD = 'email'
+REQUIRED_FIELDS = ['username']
 
 
 class PatientProfile(models.Model):
