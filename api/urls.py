@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from api.views import AmbulanceViewset, UserViewset, DriverViewset, HospitalViewset, TransactionsView, TripViewset, ReviewViewset, DoctorViewset
+from api.views import AmbulanceViewset, DriverViewset, HospitalViewset, TransactionsView, TripViewset, ReviewViewset, DoctorViewset
 from .views import RegisterView, LoginView, LogoutView
 from django.urls import path
 
