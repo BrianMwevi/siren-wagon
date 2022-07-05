@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
-class Users(AbstractUser):
+class User(AbstractUser):
 
     first_name = models.CharField(max_length=200, blank=True, null=True)
     last_name = models.CharField(max_length=200, blank=True, null=True)
