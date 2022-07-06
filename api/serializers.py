@@ -29,6 +29,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
+class EmergencyContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EmergencyContact
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'id_number',
+            'phone1',
+            'phone2',
+            'phone3',
+            'relationship',
+
+        ]
+
+
 class PatientProfileSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='patients-detail')
     user = UserSerializer()
