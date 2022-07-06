@@ -1,8 +1,10 @@
 from typing import List
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
-
-
+from rest_framework.authtoken.models import Token
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.conf import settings
 # Create your models here.
 
 class User(AbstractUser):
@@ -20,6 +22,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
 
+    
     
 
     
