@@ -15,6 +15,13 @@ from api.serializers import EmergencyContactSerializer, PackageSerializer, Hospi
 
 
 # Create your views here.
+class UserRegisterView(views.APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 
 class EmergencyContactViewset(viewsets.ModelViewSet):
     serializer_class = EmergencyContactSerializer
