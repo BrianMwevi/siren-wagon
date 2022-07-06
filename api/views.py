@@ -16,6 +16,18 @@ from api.serializers import EmergencyContactSerializer, PackageSerializer, Hospi
 
 # Create your views here.
 
+class EmergencyContactViewset(viewsets.ModelViewSet):
+    serializer_class = EmergencyContactSerializer
+    queryset = EmergencyContact.objects.all()
+
+    def get_queryset(self):
+        contacts = EmergencyContact.objects.filter(patient=self.request.user)
+        return contacts
+
+    def perform_create(self, serializer):
+        serializer.save(patient=self.request.user)
+
+
 class PatientProfileView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = PatientProfileSerializer
