@@ -16,6 +16,21 @@ from api.serializers import EmergencyContactSerializer, PackageSerializer, Hospi
 
 # Create your views here.
 
+class PatientProfileView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = PatientProfileSerializer
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        profile = PatientProfile.objects.get(id=request.user.id)
+        data = PatientProfileSerializer(
+            profile, context={'request': request}).data
+        return Response(data, status=status.HTTP_200_OK)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+
+
 class TransactionsView(generics.ListCreateAPIView):
     """The view class for creating and retrieving transactions only. One can't edit/change an existing transaction."""
     queryset = Transaction.objects.all()
