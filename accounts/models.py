@@ -7,17 +7,16 @@ from django.db.models.signals import post_save
 
 # Create your models here.
 class User(AbstractUser):
-    username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=True)
-    phone = models.CharField(max_length=200, blank=True, null=True)
-    password = models.CharField(max_length=255)
+    phone = models.CharField(max_length=200, unique=True)
+    account = models.ForeignKey(
+        CustomerAccount, blank=True, related_name='account', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.username.title()
 
-
-USERNAME_FIELD = 'email'
-REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
 
 class PatientProfile(models.Model):
@@ -35,7 +34,7 @@ class PatientProfile(models.Model):
     medical_conditions = models.CharField(
         max_length=200, blank=True, null=True)
     account = models.ForeignKey(
-        CustomerAccount, blank=True, related_name='account', null=True, on_delete=models.CASCADE)
+        CustomerAccount, blank=True, related_name='patient_account', null=True, on_delete=models.CASCADE)
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):

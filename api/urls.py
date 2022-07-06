@@ -25,9 +25,9 @@ urlpatterns = [
     path('patients/', PatientProfileView.as_view(), name='patients-list'),
     path('patients/<int:id>/', PatientProfileView.as_view(), name='patients-detail'),
     path('users/register/', UserRegisterView.as_view(), name='register'),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('logout/', LogoutView.as_view(), name='auth_logout'),
+    path('users/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('users/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('users/logout/', LogoutView.as_view(), name='auth_logout'),
 
 ]
 urlpatterns += router.urls

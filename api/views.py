@@ -2,7 +2,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework import serializers, viewsets, generics, views
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -15,12 +15,10 @@ from api.serializers import EmergencyContactSerializer, PackageSerializer, Hospi
 
 
 # Create your views here.
-class UserRegisterView(views.APIView):
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+class UserRegisterView(generics.CreateAPIView):
+    authentication_classes = ()
+    permission_classes = ()
+    serializer_class = UserSerializer
 
 
 class EmergencyContactViewset(viewsets.ModelViewSet):
@@ -57,9 +55,9 @@ class TransactionsView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """The method gets all the transactions associated with the current authenticated user. It returns a list of sent and/or received transactions."""
-        account = self.request.user.customer_account.first()
+        reciever = self.request.user.customer_account.first()
         transactions = Transaction.objects.filter(
-            Q(sender=self.request.user) | Q(account=account))
+            Q(sender=self.request.user) | Q(receiver=reciever))
         return transactions
 
     def perform_create(self, serializer):
@@ -118,6 +116,7 @@ class LogoutView(views.APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
+        # print(request.data)
         try:
             refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)

@@ -4,6 +4,7 @@ from decouple import config
 import cloudinary.uploader
 import cloudinary.api
 import django_heroku
+from datetime import timedelta
 
 
 CLOUDINARY_STORAGE = {
@@ -38,6 +39,8 @@ INSTALLED_APPS = [
     'cloudinary',
     "rest_framework",
     # 'rest_framework_swagger',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     "corsheaders",
     'accounts',
     'sirenapp',
@@ -62,12 +65,23 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     )
 }
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'SIGNING_KEY': SECRET_KEY,
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True
+}
+
 
 ROOT_URLCONF = 'core.urls'
 
@@ -160,10 +174,10 @@ CORS_ALLOWED_ORIGINS = [
 
 ]
 
-CSRF_COOKIE_SECURE =True
+CSRF_COOKIE_SECURE = True
 
 # CORS_ORIGIN_ALLOW_ALL=True
-CORS_ALLOW_CREDENTIALS=True
+CORS_ALLOW_CREDENTIALS = True
 
 
 AUTH_USER_MODEL = 'accounts.User'

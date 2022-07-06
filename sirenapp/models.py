@@ -121,7 +121,7 @@ class CustomerAccount(models.Model):
 class Transaction(models.Model):
     sender = models.ForeignKey(
         User, related_name='sender', on_delete=models.CASCADE, null=True, blank=True)
-    account = models.ForeignKey(
+    receiver = models.ForeignKey(
         CustomerAccount, related_name='receiver', on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(default=0)
     transaction_type = models.CharField(max_length=55)
@@ -129,10 +129,10 @@ class Transaction(models.Model):
     transaction_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        if self.account.account_holder:
-            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.account.account_holder.username.title()}"
+        if self.receiver.account_holder:
+            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.account_holder.username.title()}"
         else:
-            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.account.hospital.name.title()}"
+            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.hospital.name.title()}"
 
 
 class Package(models.Model):
@@ -190,7 +190,7 @@ def update_account_balance(sender, instance, created, **kwargs):
         if transaction == "withdraw":
             return CustomerAccount.withdraw(instance.sender, instance.amount)
         if transaction == "transfer":
-            account_number = instance.account.account_number
+            account_number = instance.receiver.account_number
             return CustomerAccount.transfer(instance.sender, account_number, instance.amount)
 
 
@@ -206,8 +206,10 @@ def create_fund_account(sender, instance, created, **kwargs):
         except CustomerAccount.DoesNotExist:
             account = None
             if isinstance(instance, Hospital):
-                return CustomerAccount.objects.create(
+                account = CustomerAccount.objects.create(
                     account_number=account_number, hospital=instance)
             else:
-                return CustomerAccount.objects.create(
+                account = CustomerAccount.objects.create(
                     account_number=account_number, account_holder=instance)
+            instance.account = account
+            instance.save()
