@@ -1,5 +1,4 @@
 from django.db import models
-# from core.settings import User
 from core.settings import AUTH_USER_MODEL as User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -138,8 +137,8 @@ class Transaction(models.Model):
 
 class Package(models.Model):
     CHOICES = [
-        ('1', 'regular'),
-        ('2', 'premium'),
+        ('1', 'Regular'),
+        ('2', 'Premium'),
     ]
     package_choice = models.CharField(
         max_length=200, choices=CHOICES, default="regular")
@@ -207,10 +206,8 @@ def create_fund_account(sender, instance, created, **kwargs):
         except CustomerAccount.DoesNotExist:
             account = None
             if isinstance(instance, Hospital):
-                account = CustomerAccount.objects.create(
+                return CustomerAccount.objects.create(
                     account_number=account_number, hospital=instance)
             else:
-                account = CustomerAccount.objects.create(
+                return CustomerAccount.objects.create(
                     account_number=account_number, account_holder=instance)
-            instance.account = account
-            instance.save()
