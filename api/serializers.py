@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip
-from accounts.models import User
+from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip, Package
+from accounts.models import EmergencyContact, PatientProfile, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,8 +12,6 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'url',
             'username',
-            'first_name',
-            'last_name',
             'email',
             'phone',
         ]
@@ -28,6 +26,34 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+
+class PatientProfileSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='patients-detail')
+    user = UserSerializer()
+    account = serializers.SerializerMethodField()
+    package = serializers.StringRelatedField()
+
+    class Meta:
+        model = PatientProfile
+        fields = [
+            'url',
+            'id',
+            'user',
+            'first_name',
+            'last_name',
+            'id_number',
+            'picture',
+            'emergency_contacts',
+            'package',
+            'medical_conditions',
+            'picture',
+            'account',
+        ]
+
+    def get_account(self, obj):
+        return self.account.account_number
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -116,7 +142,7 @@ class TripSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AmbulanceSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='ambulance-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='ambulances-detail')
     trips = TripSerializer(read_only=True, many=True)
     ratings = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     driver = UserSerializer(read_only=True)
