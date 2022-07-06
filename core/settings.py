@@ -29,17 +29,19 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    "livereload",
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'cloudinary_storage',
     'cloudinary',
-    'rest_framework',
     'drf_yasg',
     'rest_framework.authtoken',
-    'corsheaders',
     'knox',
+    "rest_framework",
+    # 'rest_framework_swagger',
+    "corsheaders",
     'accounts',
     'sirenapp',
     'api', 
@@ -55,23 +57,21 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'livereload.middleware.LiveReloadScript',
 ]
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework.authentication.TokenAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#         #'knox.auth.TokenAuthentication',
-#     ),
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.AllowAny',
-#     )
-# }
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 
 ROOT_URLCONF = 'core.urls'
 
@@ -158,6 +158,11 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Domains that can get access to the API
+CORS_ALLOWED_ORIGINS = [
+
+    "http://localhost:4200",
+
+]
 
 CSRF_COOKIE_SECURE =True
 

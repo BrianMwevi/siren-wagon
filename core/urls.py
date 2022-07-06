@@ -1,3 +1,4 @@
+
 """core URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -41,5 +42,5 @@ urlpatterns = [
     path('swagger/', schema_view.as_view()),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0),
          name='schema-redoc'), 
-    
 ]
+    
