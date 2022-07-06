@@ -28,6 +28,18 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class PackageSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='packages-detail')
+
+    class Meta:
+        model = Package
+        fields = [
+            'url',
+            'id',
+            'package_choice',
+            'amount',
+        ]
+
 
 class EmergencyContactSerializer(serializers.ModelSerializer):
 
