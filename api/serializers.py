@@ -59,7 +59,7 @@ class EmergencyContactSerializer(serializers.ModelSerializer):
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='patients-detail')
+    # url = serializers.HyperlinkedIdentityField(view_name='patients-detail')
     user = UserSerializer()
     account = serializers.SerializerMethodField()
     package = serializers.StringRelatedField()
@@ -67,7 +67,7 @@ class PatientProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = PatientProfile
         fields = [
-            'url',
+            # 'url',
             'id',
             'user',
             'first_name',
@@ -82,7 +82,7 @@ class PatientProfileSerializer(serializers.ModelSerializer):
         ]
 
     def get_account(self, obj):
-        return self.account.account_number
+        return obj.account.account_number
 
 
 class TransactionSerializer(serializers.ModelSerializer):
