@@ -25,7 +25,7 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Siren-Wagon API",
       default_version='v1',
-      description="This is a REST API for a Pizza Delivery service",
+      description="This is a REST API for Uber Ambulance called Sirenwagon",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contact@snippets.local"),
       license=openapi.License(name="BSD License"),
