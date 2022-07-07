@@ -38,11 +38,11 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = PatientProfileSerializer
     lookup_field = 'id'
 
-    def get(self, request, *args, **kwargs):
-        profile = PatientProfile.objects.get(user=request.user)
-        data = PatientProfileSerializer(
-            profile, context={'request': request}).data
-        return Response(data, status=status.HTTP_200_OK)
+    # def get(self, request, *args, **kwargs):
+    #     profile = PatientProfile.objects.get(user=request.user)
+    #     data = PatientProfileSerializer(
+    #         profile, context={'request': request}).data
+    #     return Response(data, status=status.HTTP_200_OK)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
