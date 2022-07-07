@@ -1,3 +1,4 @@
+from asyncore import read
 from requests import Response
 from rest_framework import serializers
 from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip, Package
@@ -60,9 +61,9 @@ class EmergencyContactSerializer(serializers.ModelSerializer):
 
 class PatientProfileSerializer(serializers.ModelSerializer):
     # url = serializers.HyperlinkedIdentityField(view_name='patients-detail')
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
     account = serializers.SerializerMethodField()
-    package = serializers.StringRelatedField()
+    package = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = PatientProfile
