@@ -87,6 +87,7 @@ class PatientProfileSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='transactions-detail')
     sender = serializers.SerializerMethodField()
     receiver = serializers.SerializerMethodField()
 
@@ -124,6 +125,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class HospitalSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='hospitals-detail')
     patients = UserSerializer(read_only=True, required=False, many=True)
     ambulances = serializers.PrimaryKeyRelatedField(
         read_only=True, required=False, many=True)
@@ -136,6 +138,7 @@ class HospitalSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Hospital
         fields = [
+            'url',
             'id',
             'name',
             'location',
@@ -172,11 +175,14 @@ class TripSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DriverSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='drivers-detail')
     trips = TripSerializer(read_only=True, many=True)
 
     class Meta:
         model = Driver
         fields = [
+            'url',
+            'id',
             'first_name',
             'last_name',
             'email',
