@@ -9,8 +9,7 @@ from django.db.models.signals import post_save
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     phone = models.CharField(max_length=200, unique=True)
-    account = models.ForeignKey(
-        CustomerAccount, blank=True, related_name='account', null=True, on_delete=models.CASCADE)
+    account = models.ForeignKey(CustomerAccount, blank=True, related_name='account', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.username.title()
@@ -24,16 +23,11 @@ class PatientProfile(models.Model):
     first_name = models.CharField(max_length=200, null=True, blank=True)
     last_name = models.CharField(max_length=200, null=True, blank=True)
     id_number = models.PositiveIntegerField(null=True, blank=True)
-    picture = models.ImageField(
-        upload_to='images/', default="images/avatar_wqbvxp.svg")
-    emergency_contacts = models.ManyToManyField(
-        'EmergencyContact', related_name='emergency_contact', blank=True)
-    package = models.ForeignKey(
-        Package, related_name='patient_packages', on_delete=models.CASCADE, null=True, blank=True)
-    medical_conditions = models.CharField(
-        max_length=200, blank=True, null=True)
-    account = models.ForeignKey(
-        CustomerAccount, blank=True, related_name='patient_account', null=True, on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to='images/', default="images/avatar_wqbvxp.svg")
+    emergency_contacts = models.ManyToManyField('EmergencyContact', related_name='emergency_contact', blank=True)
+    package = models.ForeignKey(Package, related_name='patient_packages', on_delete=models.CASCADE, null=True, blank=True)
+    medical_conditions = models.CharField(max_length=200, blank=True, null=True)
+    account = models.ForeignKey(CustomerAccount, blank=True, related_name='patient_account', null=True, on_delete=models.CASCADE)
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -41,9 +35,7 @@ class PatientProfile(models.Model):
 
 
 class EmergencyContact(models.Model):
-    patient = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="patient_emergency",null=True,blank=
-        True)
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="patient_emergency",null=True,blank=True)
     first_name = models.CharField(max_length=55)
     last_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=255, null=True, blank=True)

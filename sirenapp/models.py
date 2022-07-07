@@ -17,16 +17,14 @@ class Hospital(models.Model):
         'Doctor', related_name='hospital_doctors', blank=True)
     reviews = models.ManyToManyField(
         'Review', related_name='hospital_reviews', blank=True)
-    account = models.ForeignKey(
-        'CustomerAccount', related_name='hospital_account', blank=True, null=True, on_delete=models.CASCADE)
+    account = models.ForeignKey('CustomerAccount', related_name='hospital_account', blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
 
 class Ambulance(models.Model):
-    driver = models.ForeignKey(
-        'Driver', on_delete=models.SET_NULL, null=True, related_name='driver', blank=True)
+    driver = models.ForeignKey('Driver', on_delete=models.SET_NULL, null=True, related_name='driver', blank=True)
     number_plate = models.CharField(max_length=200, blank=True, null=True)
     available = models.BooleanField('available', default=False)
     trips = models.ManyToManyField(
@@ -43,8 +41,7 @@ class Doctor(models.Model):
     last_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=255)
-    ambulance = models.ForeignKey(
-        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor",null=True)
+    ambulance = models.ForeignKey(Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor",null=True,blank=True)
 
 
 class Driver(models.Model):
@@ -59,10 +56,8 @@ class Driver(models.Model):
 
 
 class CustomerAccount(models.Model):
-    account_holder = models.ForeignKey(
-        User, related_name='customer_account', on_delete=models.PROTECT, null=True, blank=True)
-    hospital = models.ForeignKey(
-        Hospital, related_name='hospital_account', on_delete=models.PROTECT, null=True, blank=True)
+    account_holder = models.ForeignKey(User, related_name='customer_account', on_delete=models.PROTECT, null=True, blank=True)
+    hospital = models.ForeignKey(Hospital, related_name='hospital_account', on_delete=models.PROTECT, null=True, blank=True)
     account_number = models.PositiveBigIntegerField(
         unique=True, blank=True, null=True)
     balance = models.PositiveIntegerField(default=0)
@@ -119,10 +114,8 @@ class CustomerAccount(models.Model):
 
 
 class Transaction(models.Model):
-    sender = models.ForeignKey(
-        User, related_name='sender', on_delete=models.CASCADE, null=True, blank=True)
-    receiver = models.ForeignKey(
-        CustomerAccount, related_name='receiver', on_delete=models.CASCADE,null=True, blank=True)
+    sender = models.ForeignKey(User, related_name='sender', on_delete=models.CASCADE, null=True, blank=True)
+    receiver = models.ForeignKey(CustomerAccount, related_name='receiver', on_delete=models.CASCADE,null=True, blank=True)
     amount = models.PositiveIntegerField(default=0)
     transaction_type = models.CharField(max_length=55)
     completed = models.BooleanField(default=False)
@@ -150,11 +143,9 @@ class Package(models.Model):
 
 class Trip(models.Model):
     pickup = models.CharField(max_length=255)
-    destination = models.ForeignKey(
-        Hospital, on_delete=models.CASCADE, related_name="trips", null=True, blank=True)
+    destination = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="trips", null=True, blank=True)
     persons = models.PositiveIntegerField(default=3)
-    fee = models.ForeignKey(
-        'Transaction', related_name='trip_fee', on_delete=models.CASCADE, blank=True, null=True)
+    fee = models.ForeignKey('Transaction', related_name='trip_fee', on_delete=models.CASCADE, blank=True, null=True)
     trip_date = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(default=False)
 
@@ -167,12 +158,9 @@ class Trip(models.Model):
 
 
 class Review(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="reviewer")
-    hospital = models.ForeignKey(
-        Hospital, on_delete=models.CASCADE, related_name="hospital_reviews", null=True, blank=True)
-    ambulance = models.ForeignKey(
-        Ambulance, on_delete=models.CASCADE, related_name="ambulance_reviews", null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviewer",null=True,blank=True)
+    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="hospital_reviews", null=True, blank=True)
+    ambulance = models.ForeignKey(Ambulance, on_delete=models.CASCADE, related_name="ambulance_reviews", null=True, blank=True)
     content = models.TextField(blank=True, null=True)
     rating = models.PositiveIntegerField(default=1)
     created_date = models.DateTimeField(auto_now_add=True)
