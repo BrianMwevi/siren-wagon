@@ -43,6 +43,6 @@ urlpatterns = [
     path('swagger/', schema_view.as_view()),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0),
          name='schema-redoc'), 
-    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img/favicon.ico'))),
+   
 ]
     
