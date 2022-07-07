@@ -1,45 +1,100 @@
+from requests import Response
 from rest_framework import serializers
-from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip
-from accounts.models import User
+from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip, Package
+from accounts.models import EmergencyContact, PatientProfile, User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='users-detail')
 
     class Meta:
         model = User
         fields = [
             'id',
-            'url',
             'username',
-            'first_name',
-            'last_name',
             'email',
             'phone',
+            'password',
         ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def create(self, validated_data):
-        password = validated_data.pop('password', None)
-        instance = self.Meta.model(**validated_data)
-        if password is not None:
-            instance.set_password(password)
-        instance.save()
-        return instance
+        user = User(username=validated_data['username'],
+                    email=validated_data['email'], phone=validated_data['phone'])
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+
+class PackageSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='packages-detail')
+
+    class Meta:
+        model = Package
+        fields = [
+            'url',
+            'id',
+            'package_choice',
+            'amount',
+        ]
+
+
+class EmergencyContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EmergencyContact
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'id_number',
+            'phone1',
+            'phone2',
+            'phone3',
+            'relationship',
+
+        ]
+
+
+class PatientProfileSerializer(serializers.ModelSerializer):
+    # url = serializers.HyperlinkedIdentityField(view_name='patients-detail')
+    user = UserSerializer()
+    account = serializers.SerializerMethodField()
+    package = serializers.StringRelatedField()
+
+    class Meta:
+        model = PatientProfile
+        fields = [
+            # 'url',
+            'id',
+            'user',
+            'first_name',
+            'last_name',
+            'id_number',
+            'picture',
+            'emergency_contacts',
+            'package',
+            'medical_conditions',
+            'picture',
+            'account',
+        ]
+
+    def get_account(self, obj):
+        return obj.account.account_number
 
 
 class TransactionSerializer(serializers.ModelSerializer):
     sender = serializers.SerializerMethodField()
-    account = serializers.SerializerMethodField()
+    receiver = serializers.SerializerMethodField()
 
     class Meta:
         model = Transaction
         fields = [
             'id',
             'sender',
-            'account',
+            'receiver',
             'amount',
             'completed',
             'transaction_type',
@@ -50,21 +105,21 @@ class TransactionSerializer(serializers.ModelSerializer):
         sender = {
             "id": obj.sender.id,
             "username": obj.sender.username,
-            "account": obj.sender.account.account_number
+            "account_number": obj.sender.patient.account.account_number
         }
         return sender
 
-    def get_account(self, obj):
-        account = {
-            "id": obj.account.id,
-            "account": obj.account.account_number
+    def get_receiver(self, obj):
+        receiver = {
+            "id": obj.receiver.id,
+            "account_number": obj.receiver.account_number
         }
-        if obj.account.account_holder:
-            account['username'] = obj.account.account_holder.username
+        if obj.receiver.account_holder:
+            receiver['username'] = obj.receiver.account_holder.username
         else:
-            account['name'] = obj.account.hospital.name
+            receiver['name'] = obj.receiver.hospital.name
 
-        return account
+        return receiver
 
 
 class HospitalSerializer(serializers.HyperlinkedModelSerializer):
@@ -115,11 +170,25 @@ class TripSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class DriverSerializer(serializers.HyperlinkedModelSerializer):
+    trips = TripSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Driver
+        fields = [
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'trips',
+        ]
+
+
 class AmbulanceSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='ambulance-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='ambulances-detail')
     trips = TripSerializer(read_only=True, many=True)
     ratings = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-    driver = UserSerializer(read_only=True)
+    driver = DriverSerializer(read_only=True)
 
     class Meta:
         model = Ambulance
@@ -145,20 +214,6 @@ class DoctorSerializer(serializers.HyperlinkedModelSerializer):
             'email',
             'phone',
             'ambulance',
-        ]
-
-
-class DriverSerializer(serializers.HyperlinkedModelSerializer):
-    trips = TripSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = Driver
-        fields = [
-            'first_name',
-            'last_name',
-            'email',
-            'phone',
-            'trips',
         ]
 
 

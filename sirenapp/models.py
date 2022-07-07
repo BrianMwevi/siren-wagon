@@ -1,5 +1,4 @@
 from django.db import models
-# from core.settings import User
 from core.settings import AUTH_USER_MODEL as User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -44,8 +43,8 @@ class Doctor(models.Model):
     last_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=255)
-    # ambulance = models.ForeignKey(
-    #     Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor")
+    ambulance = models.ForeignKey(
+        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor",null=True)
 
 
 class Driver(models.Model):
@@ -60,8 +59,8 @@ class Driver(models.Model):
 
 
 class CustomerAccount(models.Model):
-    # account_holder = models.ForeignKey(
-    #     User, related_name='customer_account', on_delete=models.PROTECT, null=True, blank=True)
+    account_holder = models.ForeignKey(
+        User, related_name='customer_account', on_delete=models.PROTECT, null=True, blank=True)
     hospital = models.ForeignKey(
         Hospital, related_name='hospital_account', on_delete=models.PROTECT, null=True, blank=True)
     account_number = models.PositiveBigIntegerField(
@@ -122,24 +121,24 @@ class CustomerAccount(models.Model):
 class Transaction(models.Model):
     sender = models.ForeignKey(
         User, related_name='sender', on_delete=models.CASCADE, null=True, blank=True)
-    account = models.ForeignKey(
-        CustomerAccount, related_name='receiver', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(
+        CustomerAccount, related_name='receiver', on_delete=models.CASCADE,null=True, blank=True)
     amount = models.PositiveIntegerField(default=0)
     transaction_type = models.CharField(max_length=55)
     completed = models.BooleanField(default=False)
     transaction_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        if self.account.account_holder:
-            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.account.account_holder.username.title()}"
+        if self.receiver.account_holder:
+            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.account_holder.username.title()}"
         else:
-            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.account.hospital.name.title()}"
+            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.hospital.name.title()}"
 
 
 class Package(models.Model):
     CHOICES = [
-        ('1', 'regular'),
-        ('2', 'premium'),
+        ('1', 'Regular'),
+        ('2', 'Premium'),
     ]
     package_choice = models.CharField(
         max_length=200, choices=CHOICES, default="regular")
@@ -191,7 +190,7 @@ def update_account_balance(sender, instance, created, **kwargs):
         if transaction == "withdraw":
             return CustomerAccount.withdraw(instance.sender, instance.amount)
         if transaction == "transfer":
-            account_number = instance.account.account_number
+            account_number = instance.receiver.account_number
             return CustomerAccount.transfer(instance.sender, account_number, instance.amount)
 
 
