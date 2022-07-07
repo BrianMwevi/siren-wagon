@@ -1,16 +1,8 @@
 from sirenapp.models import CustomerAccount, Package
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-<<<<<<< HEAD
-from django.contrib.auth.models import AbstractUser,BaseUserManager
-from rest_framework.authtoken.models import Token
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.conf import settings
-=======
 
 
->>>>>>> f221cdb1a78fe7fa33aa953c9eadf9fea5d4f8e8
 # Create your models here.
 class User(AbstractUser):
     first_name = models.CharField(max_length=200, blank=True, null=True)
@@ -28,25 +20,18 @@ class User(AbstractUser):
         return self.username
 
 
-<<<<<<< HEAD
-    
-    
-
-    
-=======
 USERNAME_FIELD = 'email'
 REQUIRED_FIELDS = ['username']
->>>>>>> f221cdb1a78fe7fa33aa953c9eadf9fea5d4f8e8
 
 
 class PatientProfile(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="patient")
+        User, on_delete=models.CASCADE, related_name="patient", null=True)
     picture = models.ImageField(blank=True, null=True)
     emergency_contact = models.ManyToManyField(
         'EmergencyContact', related_name='emergency_contact')
     package = models.ForeignKey(
-        Package, related_name='patient_packages', on_delete=models.CASCADE)
+        Package, related_name='patient_packages', on_delete=models.CASCADE ,null=True)
     medical_conditions = models.CharField(
         max_length=200, blank=True, null=True)
 

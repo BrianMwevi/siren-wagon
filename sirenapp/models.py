@@ -44,8 +44,8 @@ class Doctor(models.Model):
     last_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=255)
-    ambulance = models.ForeignKey(
-        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor")
+    # ambulance = models.ForeignKey(
+    #     Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor")
 
 
 class Driver(models.Model):
@@ -60,8 +60,8 @@ class Driver(models.Model):
 
 
 class CustomerAccount(models.Model):
-    account_holder = models.ForeignKey(
-        User, related_name='customer_account', on_delete=models.PROTECT, null=True, blank=True)
+    # account_holder = models.ForeignKey(
+    #     User, related_name='customer_account', on_delete=models.PROTECT, null=True, blank=True)
     hospital = models.ForeignKey(
         Hospital, related_name='hospital_account', on_delete=models.PROTECT, null=True, blank=True)
     account_number = models.PositiveBigIntegerField(
