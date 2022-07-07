@@ -4,8 +4,8 @@ from decouple import config
 import cloudinary.uploader
 import cloudinary.api
 import django_heroku
+import os
 from datetime import timedelta
-
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config("CLOUD_NAME"),
@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'cloudinary_storage',
     'cloudinary',
+    'drf_yasg',
+    'rest_framework.authtoken',
+    'knox',
     "rest_framework",
     # 'rest_framework_swagger',
     'rest_framework_simplejwt',
@@ -44,7 +47,8 @@ INSTALLED_APPS = [
     "corsheaders",
     'accounts',
     'sirenapp',
-    'api',
+    'api', 
+    
 
 
 
@@ -186,3 +190,11 @@ AUTH_USER_MODEL = 'accounts.User'
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 django_heroku.settings(locals())
+STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)

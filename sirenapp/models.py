@@ -44,7 +44,7 @@ class Doctor(models.Model):
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=255)
     ambulance = models.ForeignKey(
-        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor")
+        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor",null=True)
 
 
 class Driver(models.Model):
@@ -122,7 +122,7 @@ class Transaction(models.Model):
     sender = models.ForeignKey(
         User, related_name='sender', on_delete=models.CASCADE, null=True, blank=True)
     receiver = models.ForeignKey(
-        CustomerAccount, related_name='receiver', on_delete=models.CASCADE)
+        CustomerAccount, related_name='receiver', on_delete=models.CASCADE,null=True, blank=True)
     amount = models.PositiveIntegerField(default=0)
     transaction_type = models.CharField(max_length=55)
     completed = models.BooleanField(default=False)
