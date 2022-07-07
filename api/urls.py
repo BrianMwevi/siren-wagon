@@ -22,8 +22,7 @@ router.register('emergencies', EmergencyContactViewset, basename='emergencies')
 
 urlpatterns = [
     path('transactions/', TransactionsView.as_view(), name='transactions'),
-    path('profile/', PatientProfileView.as_view(), name='profile-list'),
-    path('profile/<int:id>/', PatientProfileView.as_view(), name='patients-detail'),
+    path('profile/<int:id>/', PatientProfileView.as_view(), name='profile-detail'),
     path('users/register/', UserRegisterView.as_view(), name='register'),
     path('users/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('users/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
