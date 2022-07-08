@@ -94,6 +94,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = [
+            'url',
             'id',
             'sender',
             'receiver',
