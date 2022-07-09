@@ -16,13 +16,12 @@ class User(AbstractUser):
         return self.username.title()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'phone']
 
 
 class PatientProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="patient")
-    first_name = models.CharField(max_length=200, null=True, blank=True)
-    last_name = models.CharField(max_length=200, null=True, blank=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="patient")
     id_number = models.PositiveIntegerField(null=True, blank=True)
     picture = models.ImageField(
         upload_to='images/', default="images/avatar_wqbvxp.svg")
@@ -42,8 +41,7 @@ class PatientProfile(models.Model):
 
 class EmergencyContact(models.Model):
     patient = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="patient_emergency",null=True,blank=
-        True)
+        User, on_delete=models.CASCADE, related_name="patient_emergency", null=True, blank=True)
     first_name = models.CharField(max_length=55)
     last_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=255, null=True, blank=True)
@@ -55,7 +53,6 @@ class EmergencyContact(models.Model):
 
     def __str__(self):
 
-
         return f"{self.first_name} {self.last_name}: {self.relationship}"
 
 
@@ -64,4 +61,3 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         account = CustomerAccount.objects.get(account_holder=instance)
         profile = PatientProfile.objects.create(user=instance, account=account)
-

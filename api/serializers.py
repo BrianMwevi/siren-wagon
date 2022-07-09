@@ -71,8 +71,6 @@ class PatientProfileSerializer(serializers.ModelSerializer):
             # 'url',
             'id',
             'user',
-            'first_name',
-            'last_name',
             'id_number',
             'picture',
             'emergency_contacts',
