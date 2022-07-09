@@ -34,9 +34,9 @@ class EmergencyContactViewset(viewsets.ModelViewSet):
 
 
 class PatientProfileView(generics.RetrieveUpdateAPIView):
+    lookup_field = 'id'
     queryset = PatientProfile.objects.all()
     serializer_class = PatientProfileSerializer
-    # lookup_field = 'id'
 
     # def get(self, request, *args, **kwargs):
     #     profile = PatientProfile.objects.get(user=request.user)
