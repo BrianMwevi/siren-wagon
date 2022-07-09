@@ -60,9 +60,9 @@ class Driver(models.Model):
 
 class CustomerAccount(models.Model):
     account_holder = models.ForeignKey(
-        User, related_name='customer_account', on_delete=models.PROTECT, null=True, blank=True)
+        User, related_name='customer_account', on_delete=models.CASCADE, null=True, blank=True)
     hospital = models.ForeignKey(
-        Hospital, related_name='hospital_account', on_delete=models.PROTECT, null=True, blank=True)
+        Hospital, related_name='hospital_account', on_delete=models.CASCADE, null=True, blank=True)
     account_number = models.PositiveBigIntegerField(
         unique=True, blank=True, null=True)
     balance = models.PositiveIntegerField(default=0)
