@@ -1,4 +1,3 @@
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework import serializers, viewsets, generics, views
 from rest_framework import status
@@ -14,7 +13,6 @@ from accounts.models import User, PatientProfile, EmergencyContact
 from api.serializers import EmergencyContactSerializer, PackageSerializer, HospitalSerializer, ReviewSerializer, TransactionSerializer, TripSerializer, DoctorSerializer, AmbulanceSerializer, DriverSerializer, PatientProfileSerializer, UserSerializer
 
 
-# Create your views here.
 class UserRegisterView(generics.CreateAPIView):
     authentication_classes = ()
     permission_classes = ()
@@ -37,12 +35,6 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
     lookup_field = 'id'
     queryset = PatientProfile.objects.all()
     serializer_class = PatientProfileSerializer
-
-    # def get(self, request, *args, **kwargs):
-    #     profile = PatientProfile.objects.get(user=request.user)
-    #     data = PatientProfileSerializer(
-    #         profile, context={'request': request}).data
-    #     return Response(data, status=status.HTTP_200_OK)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
@@ -116,12 +108,10 @@ class LogoutView(views.APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        # print(request.data)
         try:
             refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)
             token.blacklist()
-
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
