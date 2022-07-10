@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from api.views import AmbulanceViewset, DriverViewset, EmergencyContactViewset, HospitalViewset, TransactionsView, TripViewset, ReviewViewset, DoctorViewset, PackageViewset, PatientProfileView, UserRegisterView, LogoutView, ProcessPayments
-from payments.views import successfull_transaction
+# from payments.views import successfull_transaction
 from django.urls import path
 
 
