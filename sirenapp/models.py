@@ -128,11 +128,11 @@ class Transaction(models.Model):
     completed = models.BooleanField(default=False)
     transaction_date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        if self.receiver.account_holder:
-            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.account_holder.username.title()}"
-        else:
-            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.hospital.name.title()}"
+    # def __str__(self):
+    #     if self.receiver.account_holder:
+    #         return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.account_holder.username.title()}"
+    #     else:
+    #         return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.hospital.name.title()}"
 
 
 class Package(models.Model):
