@@ -11,6 +11,7 @@ from django.db.models import Q
 from sirenapp.models import CustomerAccount, Hospital, Package, Transaction, Trip, Review, Doctor, Ambulance, Driver
 from accounts.models import User, PatientProfile, EmergencyContact
 from api.serializers import EmergencyContactSerializer, PackageSerializer, HospitalSerializer, ReviewSerializer, TransactionSerializer, TripSerializer, DoctorSerializer, AmbulanceSerializer, DriverSerializer, PatientProfileSerializer, UserSerializer
+from payments.transact import initiate_transaction
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -115,3 +116,24 @@ class LogoutView(views.APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class PaymentView(generics.CreateAPIView):
+    serializer_class = TransactionSerializer
+    queryset = Transaction.objects.all()
+
+    def perform_create(self, serializer):
+        sender = self.request.user
+        receiver = CustomerAccount.objects.get(
+            account_holder__id=self.request.data['receiver'])
+        amount = self.request.data['amount']
+        message = self.request.data['transaction_type']
+        response = initiate_transaction(
+            sender, receiver, amount, message)
+        try:
+
+            error_message = response['errorMessage']
+            raise serializers.ValidationError(
+                {'detail': error_message})
+        except:
+            serializer.save(sender=sender, receiver=receiver)

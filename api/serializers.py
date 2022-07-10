@@ -85,14 +85,14 @@ class PatientProfileSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='transactions-detail')
-    sender = serializers.SerializerMethodField()
-    receiver = serializers.SerializerMethodField()
+    # url = serializers.HyperlinkedIdentityField(view_name='transactions-detail')
+    # sender = serializers.SerializerMethodField()
+    # receiver = serializers.SerializerMethodField()
 
     class Meta:
         model = Transaction
         fields = [
-            'url',
+            # 'url',
             'id',
             'sender',
             'receiver',

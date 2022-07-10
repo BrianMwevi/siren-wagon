@@ -47,8 +47,9 @@ INSTALLED_APPS = [
     "corsheaders",
     'accounts',
     'sirenapp',
-    'api', 
-    
+    'api',
+    'payments',
+
 
 
 

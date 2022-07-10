@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from api.views import AmbulanceViewset, DriverViewset, EmergencyContactViewset, HospitalViewset, TransactionsView, TripViewset, ReviewViewset, DoctorViewset, PackageViewset, PatientProfileView, UserRegisterView, LogoutView
+from api.views import AmbulanceViewset, DriverViewset, EmergencyContactViewset, HospitalViewset, TransactionsView, TripViewset, ReviewViewset, DoctorViewset, PackageViewset, PatientProfileView, UserRegisterView, LogoutView, PaymentView
 
 from django.urls import path
 
@@ -27,6 +27,7 @@ urlpatterns = [
     path('users/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('users/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('users/logout/', LogoutView.as_view(), name='auth_logout'),
+    path('payments/', PaymentView.as_view(), name='payments'),
 
 ]
 urlpatterns += router.urls

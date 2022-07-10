@@ -109,7 +109,6 @@ class CustomerAccount(models.Model):
     @classmethod
     def can_transact(cls, account_number, amount):
         account = cls.get_account(account_number)
-        print(account.balance, amount)
         return account.balance >= amount
 
     def __str__(self):
