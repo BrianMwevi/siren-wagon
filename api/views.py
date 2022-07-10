@@ -1,3 +1,7 @@
+import requests
+from datetime import datetime
+import base64
+from decouple import config
 from rest_framework.response import Response
 from rest_framework import serializers, viewsets, generics, views
 from rest_framework import status
@@ -11,6 +15,11 @@ from django.db.models import Q
 from sirenapp.models import CustomerAccount, Hospital, Package, Transaction, Trip, Review, Doctor, Ambulance, Driver
 from accounts.models import User, PatientProfile, EmergencyContact
 from api.serializers import EmergencyContactSerializer, PackageSerializer, HospitalSerializer, ReviewSerializer, TransactionSerializer, TripSerializer, DoctorSerializer, AmbulanceSerializer, DriverSerializer, PatientProfileSerializer, UserSerializer
+
+import requests
+from decouple import config
+import base64
+from datetime import datetime
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -115,3 +124,45 @@ class LogoutView(views.APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProcessPayments(views.APIView):
+    permission_classes = (IsAuthenticated)
+
+    def post(self, request):
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {config("DARAJA_TOKEN")}'
+        }
+
+        consumer_key = config('CONSUMER_KEY')
+        consumer_secret = config('CONSUMER_SECRET')
+        passkey = config('PASS_KEY'),
+        timestamp = datetime.now().strftime("%Y%M%d%H%M%S")
+        shortcode = config("BUSINESS_SHORT_CODE")
+        amount = request.data.get("amount", 0)
+        receiver_phone = request.data.get("receiver_phone")
+        receiver = CustomerAccount.objects.get(
+            account_holder__phone=receiver_phone)
+        transaction_type = request.data.get("transaction_type")
+
+        payload = {
+            "BusinessShortCode": shortcode,
+            # "PassKey": passkey,
+            "Password": base64.encode(shortcode+passkey+timestamp),
+            "Timestamp": timestamp,
+            "TransactionType": "CustomerPayBillOnline",
+            "Amount": amount,
+            "PartyA": request.user.phone,  # phone number
+            "PartyB": shortcode,  # paybill number
+            "PhoneNumber": receiver_phone,  # phone number
+            "CallBackURL": config("CALLBACK_URL"),
+            "AccountReference": receiver.account_number,
+            "TransactionDesc": transaction_type,
+        }
+
+        response = requests.request(
+            "POST", 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', headers=headers, data=payload)
+        print(response.text.encode('utf8'))
+        return Response(status=status.HTTP_200_OK, data=response.text.encode('utf8'))
