@@ -126,43 +126,75 @@ class LogoutView(views.APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProcessPayments(views.APIView):
-    permission_classes = (IsAuthenticated)
+class ProcessPayments(generics.CreateAPIView):
+    queryset = CustomerAccount.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = TransactionSerializer
 
-    def post(self, request):
+    def perform_create(self, serializer):
 
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': f'Bearer {config("DARAJA_TOKEN")}'
+            'Authorization': 'Bearer nvm0bU96MYorAhmrBbIqs3o2mZrZ'
         }
-
-        consumer_key = config('CONSUMER_KEY')
-        consumer_secret = config('CONSUMER_SECRET')
-        passkey = config('PASS_KEY'),
-        timestamp = datetime.now().strftime("%Y%M%d%H%M%S")
-        shortcode = config("BUSINESS_SHORT_CODE")
-        amount = request.data.get("amount", 0)
-        receiver_phone = request.data.get("receiver_phone")
-        receiver = CustomerAccount.objects.get(
-            account_holder__phone=receiver_phone)
-        transaction_type = request.data.get("transaction_type")
-
         payload = {
-            "BusinessShortCode": shortcode,
-            # "PassKey": passkey,
-            "Password": base64.encode(shortcode+passkey+timestamp),
-            "Timestamp": timestamp,
+            "BusinessShortCode": 174379,
+            "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwNzEwMTcwODAx",
+            "Timestamp": "20220710170801",
             "TransactionType": "CustomerPayBillOnline",
-            "Amount": amount,
-            "PartyA": request.user.phone,  # phone number
-            "PartyB": shortcode,  # paybill number
-            "PhoneNumber": receiver_phone,  # phone number
-            "CallBackURL": config("CALLBACK_URL"),
-            "AccountReference": receiver.account_number,
-            "TransactionDesc": transaction_type,
+            "Amount": 1,
+            "PartyA": 254708374149,
+            "PartyB": 174379,
+            "PhoneNumber": 254708374149,
+            "CallBackURL": "https://mydomain.com/path",
+            "AccountReference": "CompanyXLTD",
+            "TransactionDesc": "Payment of X"
         }
-
         response = requests.request(
             "POST", 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', headers=headers, data=payload)
         print(response.text.encode('utf8'))
-        return Response(status=status.HTTP_200_OK, data=response.text.encode('utf8'))
+
+
+class SuccessfulResponse(views.APIView):
+    def post(self, request):
+        print('Success', request)
+
+# def perform_create(self, serializer):
+
+#     headers = {
+#         'Content-Type': 'application/json',
+#         'Authorization': f'Bearer {config("DARAJA_TOKEN")}'
+#     }
+
+#     consumer_key = config('CONSUMER_KEY')
+#     consumer_secret = config('CONSUMER_SECRET')
+#     passkey = config('PASS_KEY'),
+#     timestamp = datetime.now().strftime("%Y%M%d%H%M%S")
+#     shortcode = config("BUSINESS_SHORT_CODE")
+#     amount = self.request.data.get("amount", 0)
+#     receiver_phone = self.request.data.get("receiver_phone")
+#     print(receiver_phone)
+#     # receiver = CustomerAccount.objects.get(
+#     #     account_holder__phone=receiver_phone)
+#     transaction_type = self.request.data.get("transaction_type")
+
+#     payload = {
+#         "BusinessShortCode": shortcode,
+#         # "PassKey": passkey,
+#         "Password": base64.b64encode(shortcode+passkey+timestamp),
+#         "Timestamp": timestamp,
+#         "TransactionType": "CustomerPayBillOnline",
+#         "Amount": amount,
+#         "PartyA": self.request.user.phone,  # phone number
+#         "PartyB": shortcode,  # paybill number
+#         "PhoneNumber": receiver_phone,  # phone number
+#         "CallBackURL": config("CALLBACK_URL"),
+#         "AccountReference": "receiver.account_number",
+#         "TransactionDesc": transaction_type,
+#     }
+#     print(self.request.data)
+
+# response = requests.request(
+#     "POST", 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', headers=headers, data=payload)
+# print(response.text.encode('utf8'))
+# return Response(status=status.HTTP_200_OK, data=response.text.encode('utf8'))
