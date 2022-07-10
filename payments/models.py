@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from django.db import models
 
-# Create your models here.
-=======
 from lib2to3.pgen2 import token
 from django.db import models
 from datetime import datetime
@@ -35,4 +31,4 @@ class DarajaToken(models.Model):
 
     def __str__(self):
         return f'Expired: {self.get_credentials()[1]}'
->>>>>>> develop
+
