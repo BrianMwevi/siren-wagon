@@ -1,5 +1,4 @@
 
-from os import times
 import requests
 from datetime import datetime
 from payments.models import DarajaToken
@@ -10,28 +9,27 @@ import json
 
 def initiate_transaction(sender, receiver, amount, message):
     token, expired = DarajaToken.get_credentials()
-    print("Token before if....", token.token)
-    if not token or expired:
+    print("Token before if....", token)
+    if expired or token == None:
         new_token, expiry = request_new_token()
         if expired:
             updated_token = token.update_token(new_token)
             token = updated_token
         else:
             token = DarajaToken.objects.create(token=new_token)
-    print("Token after if....", token.token)
+    print("Token after if....", token)
     headers = {
         "Content-Type": "application/json",
         'Authorization': f'Bearer {token.token}'
 
     }
-    timestamp = datetime.now().strftime("%Y%m%d%I%M%S")
-    print(type(timestamp))  # 20220710132848
+    # timestamp = datetime.now().strftime("%Y-%m-%d%H:%M:%S")
+    # print(timestamp)
 
     payload = {
         "BusinessShortCode": config("BUSINESS_SHORT_CODE"),
         "Password": config('DARAJA_PASSWORD'),
-        # "Timestamp": timestamp,
-        "Timestamp": 20220710132848,
+        "Timestamp": "20220710132848",
         "TransactionType": "CustomerPayBillOnline",
         "Amount": amount,
         "PartyA": sender.phone,
