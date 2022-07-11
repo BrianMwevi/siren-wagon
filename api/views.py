@@ -41,32 +41,42 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
         serializer.save(user=self.request.user)
 
 
-class TransactionsView(generics.ListCreateAPIView):
+class TransactionViewset(viewsets.ModelViewSet):
     """The view class for creating and retrieving transactions only. One can't edit/change an existing transaction."""
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
     def get_queryset(self):
         """The method gets all the transactions associated with the current authenticated user. It returns a list of sent and/or received transactions."""
-        reciever = self.request.user.customer_account.first()
+        receiver = self.request.user.customer_account.first()
         transactions = Transaction.objects.filter(
-            Q(sender=self.request.user) | Q(receiver=reciever))
+            Q(sender=self.request.user) | Q(receiver=receiver))
         return transactions
 
     def perform_create(self, serializer):
         """Method to create a new transaction. Checks if the sender has sufficient balance before transacting and raises an exception if the balance is less the amount to be transacted."""
-        receiver_account_number = self.request.data['account_number']
-        sender = self.request.user.customer_account.first()
-        transaction_type = self.request.data['transaction_type'].lower()
-        can_transact = CustomerAccount.can_transact(
-            sender.account_number, self.request.data['amount'])
-
-        if can_transact or (transaction_type == "deposit" and receiver_account_number == sender.account_number):
-            account = CustomerAccount.get_account(receiver_account_number)
-            serializer.save(sender=self.request.user, account=account)
-        else:
+        sender = self.request.user
+        receiver = CustomerAccount.objects.get(
+            account_number=self.request.data['receiver'])
+        message = self.request.data['transaction_type'].lower()
+        if sender.customer_account.first().account_number == receiver.account_number and message == 'transfer':
             raise serializers.ValidationError(
-                {"detail": "You have insufficient account balance"})
+                {"detail": "Did you mean to deposit? You can't send money to yourself"})
+        amount = self.request.data['amount']
+        response = initiate_transaction(
+            sender, receiver, amount, message)
+
+        if "errorMessage" in response:
+            raise serializers.ValidationError(
+                {'detail': response['errorMessage']})
+        serializer.save(sender=sender, receiver=receiver)
+
+
+class SuccessfulPayments(generics.ListCreateAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    # def perform_create
 
 
 class HospitalViewset(viewsets.ModelViewSet):
@@ -118,22 +128,22 @@ class LogoutView(views.APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class PaymentView(generics.CreateAPIView):
-    serializer_class = TransactionSerializer
-    queryset = Transaction.objects.all()
+# class PaymentView(generics.CreateAPIView):
+#     serializer_class = TransactionSerializer
+#     queryset = Transaction.objects.all()
 
-    def perform_create(self, serializer):
-        sender = self.request.user
-        receiver = CustomerAccount.objects.get(
-            account_holder__id=self.request.data['receiver'])
-        amount = self.request.data['amount']
-        message = self.request.data['transaction_type']
-        response = initiate_transaction(
-            sender, receiver, amount, message)
-        try:
+#     def perform_create(self, serializer):
+#         sender = self.request.user
+#         receiver = CustomerAccount.objects.get(
+#             account_holder__id=self.request.data['receiver'])
+#         amount = self.request.data['amount']
+#         message = self.request.data['transaction_type']
+#         response = initiate_transaction(
+#             sender, receiver, amount, message)
+#         try:
 
-            error_message = response['errorMessage']
-            raise serializers.ValidationError(
-                {'detail': error_message})
-        except:
-            serializer.save(sender=sender, receiver=receiver)
+#             error_message = response['errorMessage']
+#             raise serializers.ValidationError(
+#                 {'detail': error_message})
+#         except:
+#             serializer.save(sender=sender, receiver=receiver)
