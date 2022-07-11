@@ -85,42 +85,29 @@ class PatientProfileSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    # url = serializers.HyperlinkedIdentityField(view_name='transactions-detail')
-    # sender = serializers.SerializerMethodField()
-    # receiver = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(view_name='transactions-detail')
+    sender = serializers.SerializerMethodField()
+    receiver = serializers.SerializerMethodField()
+    completed = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Transaction
         fields = [
-            # 'url',
+            'url',
             'id',
-            'sender',
             'receiver',
+            'sender',
             'amount',
-            'completed',
             'transaction_type',
             'transaction_date',
+            'completed',
         ]
 
     def get_sender(self, obj):
-        sender = {
-            "id": obj.sender.id,
-            "username": obj.sender.username,
-            "account_number": obj.sender.patient.account.account_number
-        }
-        return sender
+        return obj.sender.patient.account.account_number
 
     def get_receiver(self, obj):
-        receiver = {
-            "id": obj.receiver.id,
-            "account_number": obj.receiver.account_number
-        }
-        if obj.receiver.account_holder:
-            receiver['username'] = obj.receiver.account_holder.username
-        else:
-            receiver['name'] = obj.receiver.hospital.name
-
-        return receiver
+        return obj.receiver.account_number
 
 
 class HospitalSerializer(serializers.HyperlinkedModelSerializer):
