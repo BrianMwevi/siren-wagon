@@ -1,5 +1,4 @@
 import json
-from os import access
 import requests
 from decouple import config
 from requests.auth import HTTPBasicAuth
