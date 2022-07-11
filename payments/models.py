@@ -1,7 +1,4 @@
-
-from lib2to3.pgen2 import token
 from django.db import models
-from datetime import datetime
 from django.utils import timezone
 
 
@@ -25,10 +22,11 @@ class DarajaToken(models.Model):
 
     @classmethod
     def get_credentials(cls):
-        token = cls.objects.all().first()
+        token = cls.objects.first()
+        if not token:
+            return (None, None)
         expired = token.has_expired()
         return (token, expired)
 
     def __str__(self):
         return f'Expired: {self.get_credentials()[1]}'
-
