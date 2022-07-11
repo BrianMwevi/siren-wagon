@@ -8,7 +8,7 @@ class DarajaToken(models.Model):
     updated_at = models.DateTimeField()
 
     @classmethod
-    def save_token(cls, new_token):
+    def create_token(cls, new_token):
         token = cls.objects.create(token=new_token, updated_at=timezone.now())
         return token
 
