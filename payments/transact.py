@@ -30,8 +30,8 @@ def initiate_transaction(sender, receiver, amount, message):
     payload = {
         "BusinessShortCode": config("BUSINESS_SHORT_CODE"),
         "Password": config('DARAJA_PASSWORD'),
-        "Timestamp": timestamp,
-        # "Timestamp": 20220710132848,
+        # "Timestamp": timestamp,
+        "Timestamp": 20220710132848,
         "TransactionType": "CustomerPayBillOnline",
         "Amount": amount,
         "PartyA": sender.phone,
