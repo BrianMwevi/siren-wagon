@@ -5,12 +5,18 @@ from django.utils import timezone
 class DarajaToken(models.Model):
     token = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField()
+
+    @classmethod
+    def save_token(cls, new_token):
+        token = cls.objects.create(token=new_token, updated_at=timezone.now())
+        return token
 
     @classmethod
     def update_token(cls, new_token):
         old_token, expired = cls.get_credentials()
         old_token.token = new_token
+        old_token.updated_at = timezone.now()
         updated_token = old_token.save()
         return updated_token
 
@@ -22,8 +28,8 @@ class DarajaToken(models.Model):
 
     @classmethod
     def get_credentials(cls):
-        token = cls.objects.first()
-        if not token:
+        token = cls.objects.all().first()
+        if token is None:
             return (None, None)
         expired = token.has_expired()
         return (token, expired)
