@@ -126,24 +126,3 @@ class LogoutView(views.APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-# class PaymentView(generics.CreateAPIView):
-#     serializer_class = TransactionSerializer
-#     queryset = Transaction.objects.all()
-
-#     def perform_create(self, serializer):
-#         sender = self.request.user
-#         receiver = CustomerAccount.objects.get(
-#             account_holder__id=self.request.data['receiver'])
-#         amount = self.request.data['amount']
-#         message = self.request.data['transaction_type']
-#         response = initiate_transaction(
-#             sender, receiver, amount, message)
-#         try:
-
-#             error_message = response['errorMessage']
-#             raise serializers.ValidationError(
-#                 {'detail': error_message})
-#         except:
-#             serializer.save(sender=sender, receiver=receiver)
