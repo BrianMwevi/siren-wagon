@@ -14,11 +14,11 @@ class DarajaToken(models.Model):
 
     @classmethod
     def update_token(cls, new_token):
-        old_token, expired = cls.get_credentials()
-        old_token.token = new_token
-        old_token.updated_at = timezone.now()
-        updated_token = old_token.save()
-        return updated_token
+        token, expired = cls.get_credentials()
+        token.token = new_token
+        token.updated_at = timezone.now()
+        token.save()
+        return token
 
     def has_expired(self):
         time_diff = (timezone.now() - self.updated_at).seconds
