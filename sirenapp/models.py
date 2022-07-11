@@ -19,6 +19,7 @@ class Hospital(models.Model):
         'Review', related_name='hospital_reviews', blank=True)
     account = models.ForeignKey(
         'CustomerAccount', related_name='hospital_account', blank=True, null=True, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=55, unique=True)
 
     def __str__(self):
         return self.name
@@ -27,6 +28,7 @@ class Hospital(models.Model):
 class Ambulance(models.Model):
     driver = models.ForeignKey(
         'Driver', on_delete=models.SET_NULL, null=True, related_name='driver', blank=True)
+    phone = models.CharField(max_length=55, unique=True)
     number_plate = models.CharField(max_length=200, blank=True, null=True)
     available = models.BooleanField('available', default=False)
     trips = models.ManyToManyField(
@@ -42,16 +44,16 @@ class Doctor(models.Model):
     first_name = models.CharField(max_length=55)
     last_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=255)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=55, unique=True)
     ambulance = models.ForeignKey(
-        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor",null=True)
+        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor", null=True)
 
 
 class Driver(models.Model):
     first_name = models.CharField(max_length=55)
     last_name = models.CharField(max_length=55)
     email = models.EmailField(max_length=255)
-    phone = models.CharField(max_length=255)
+    phone = models.PositiveIntegerField(default="")
     trips = models.ManyToManyField('Trip', blank=True, related_name='trips')
 
     def __str__(self):
@@ -73,8 +75,8 @@ class CustomerAccount(models.Model):
         import random
         import string
         account_number = "".join(random.choice(string.digits)
-                                 for _ in range(0, 12))
-        return account_number
+                                 for _ in range(0, 9))
+        return f"112{account_number}"
 
     @classmethod
     def get_account(cls, account_number):
@@ -113,25 +115,25 @@ class CustomerAccount(models.Model):
 
     def __str__(self):
         if self.account_holder:
-            return f"{self.account_holder.username}: {self.account_number}"
-        return f"{self.hospital.name}: {self.account_number}"
+            return f"{self.account_holder.username}:{self.account_number}"
+        return f"{self.hospital.name}:{self.account_number}"
 
 
 class Transaction(models.Model):
     sender = models.ForeignKey(
         User, related_name='sender', on_delete=models.CASCADE, null=True, blank=True)
     receiver = models.ForeignKey(
-        CustomerAccount, related_name='receiver', on_delete=models.CASCADE,null=True, blank=True)
+        CustomerAccount, related_name='receiver', on_delete=models.CASCADE, null=True, blank=True)
     amount = models.PositiveIntegerField(default=0)
     transaction_type = models.CharField(max_length=55)
     completed = models.BooleanField(default=False)
     transaction_date = models.DateTimeField(auto_now_add=True)
 
-    # def __str__(self):
-    #     if self.receiver.account_holder:
-    #         return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.account_holder.username.title()}"
-    #     else:
-    #         return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.hospital.name.title()}"
+    def __str__(self):
+        if self.receiver.account_holder:
+            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.account_holder.username.title()}"
+        else:
+            return f"{self.transaction_type.title()}: {self.sender.username.title()} TO {self.receiver.hospital.name.title()}"
 
 
 class Package(models.Model):
@@ -180,8 +182,7 @@ class Review(models.Model):
 # Custom signals and methods
 @receiver(post_save, sender=Transaction)
 def update_account_balance(sender, instance, created, **kwargs):
-    if created:
-        instance.completed = True
+    if instance.completed:
         instance.save()
         transaction = instance.transaction_type.lower()
         if transaction == "deposit":
@@ -191,6 +192,7 @@ def update_account_balance(sender, instance, created, **kwargs):
         if transaction == "transfer":
             account_number = instance.receiver.account_number
             return CustomerAccount.transfer(instance.sender, account_number, instance.amount)
+    return instance
 
 
 @receiver(post_save, sender=Hospital)
