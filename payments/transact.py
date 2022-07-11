@@ -12,10 +12,9 @@ def initiate_transaction(sender, receiver, amount, message):
     if expired or token == None:
         new_token, expiry = request_new_token()
         if expired:
-            updated_token = token.update_token(new_token)
-            token = updated_token
+            token = token.update_token(new_token)
         else:
-            token = DarajaToken.save_token(token)
+            token = DarajaToken.create_token(token)
     headers = {
         "Content-Type": "application/json",
         'Authorization': f'Bearer {token.token}'
