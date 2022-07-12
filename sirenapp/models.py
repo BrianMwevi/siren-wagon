@@ -14,7 +14,7 @@ class Hospital(models.Model):
     established_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     doctors = models.ManyToManyField(
-        'Doctor', related_name='hospital_doctors', blank=True)
+        User, related_name='hospital_doctors', blank=True)
     reviews = models.ManyToManyField(
         'Review', related_name='hospital_reviews', blank=True)
     account = models.ForeignKey(
@@ -27,10 +27,14 @@ class Hospital(models.Model):
 
 class Ambulance(models.Model):
     driver = models.ForeignKey(
-        'Driver', on_delete=models.SET_NULL, null=True, related_name='driver', blank=True)
+        User, on_delete=models.CASCADE, related_name='ambulance_driver')
+    doctor = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='ambulance_doctor')
     phone = models.CharField(max_length=55, unique=True)
     number_plate = models.CharField(max_length=200, blank=True, null=True)
+    insurance = models.CharField(max_length=55, unique=True)
     available = models.BooleanField('available', default=False)
+    in_transit = models.BooleanField(default=False)
     trips = models.ManyToManyField(
         'Trip', blank=True, related_name='ambulance_trips')
     ratings = models.ManyToManyField(
@@ -38,26 +42,6 @@ class Ambulance(models.Model):
 
     def __str__(self):
         return self.number_plate
-
-
-class Doctor(models.Model):
-    first_name = models.CharField(max_length=55)
-    last_name = models.CharField(max_length=55)
-    email = models.EmailField(max_length=255)
-    phone = models.CharField(max_length=55, unique=True)
-    ambulance = models.ForeignKey(
-        Ambulance, on_delete=models.CASCADE, related_name="ambulance_doctor", null=True)
-
-
-class Driver(models.Model):
-    first_name = models.CharField(max_length=55)
-    last_name = models.CharField(max_length=55)
-    email = models.EmailField(max_length=255)
-    phone = models.PositiveIntegerField(default="")
-    trips = models.ManyToManyField('Trip', blank=True, related_name='trips')
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
 
 
 class CustomerAccount(models.Model):
