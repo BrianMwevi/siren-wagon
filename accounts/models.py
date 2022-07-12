@@ -1,11 +1,8 @@
-from sirenapp.models import Ambulance, CustomerAccount, Doctor, Hospital, Package, Review, Trip
+from sirenapp.models import Ambulance, CustomerAccount, Package
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 
 
-# Create your models here.
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     phone = models.CharField(max_length=200, unique=True)
@@ -22,27 +19,33 @@ class User(AbstractUser):
 
 class DriverProfile(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="driver")
+        User, on_delete=models.CASCADE, related_name="driver_profile")
     id_number = models.PositiveIntegerField(unique=True)
     driving_license = models.CharField(max_length=55, unique=True)
     picture = models.ImageField(
         upload_to='images/', default="images/avatar_wqbvxp.svg")
     ambulance = models.ForeignKey(
         Ambulance, related_name='driver_ambulance', on_delete=models.CASCADE, null=True, blank=True)
-    hospital = models.ForeignKey(Hospital, related_name='driver_hospital',
-                                 on_delete=models.CASCADE, null=True, blank=True)
-    doctor = models.ForeignKey(Doctor, related_name='driver_doctor',
-                               on_delete=models.CASCADE, null=True, blank=True)
-    trips = models.ManyToManyField(
-        Trip, related_name='driver_trips', blank=True)
-    reviews = models.ManyToManyField(
-        Review, related_name='driver_reviews', blank=True)
     updated_date = models.DateTimeField(auto_now=True)
     availability = models.BooleanField(default=False)
-    in_transit = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.user.username} > {self.driving_license}"
+        return f"Driver: {self.user.username.title()}"
+
+
+class DoctorProfile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="doctor_profile")
+    id_number = models.PositiveIntegerField(unique=True)
+    picture = models.ImageField(
+        upload_to='images/', default="images/avatar_wqbvxp.svg")
+    ambulance = models.ForeignKey(
+        Ambulance, related_name='doctor_ambulance', on_delete=models.CASCADE, null=True, blank=True)
+    availability = models.BooleanField(default=False)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"Doctor: {self.user.username.title()}"
 
 
 class PatientProfile(models.Model):
@@ -62,7 +65,7 @@ class PatientProfile(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user.username
+        return f"Patient: {self.user.username.title()}"
 
 
 class EmergencyContact(models.Model):
@@ -80,11 +83,3 @@ class EmergencyContact(models.Model):
     def __str__(self):
 
         return f"{self.first_name} {self.last_name}: {self.relationship}"
-
-
-@ receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        account = CustomerAccount.objects.get(account_holder=instance)
-        profile = PatientProfile.objects.create(
-            user=instance, account=account)
