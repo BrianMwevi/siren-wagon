@@ -1,8 +1,8 @@
 from asyncore import read
 from requests import Response
 from rest_framework import serializers
-from sirenapp.models import Ambulance, Doctor, Driver, Hospital, Review, Transaction, Trip, Package
-from accounts.models import EmergencyContact, PatientProfile, User
+from sirenapp.models import Ambulance, Hospital, Review, Transaction, Trip, Package
+from accounts.models import EmergencyContact, PatientProfile, User, DoctorProfile, DriverProfile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -165,15 +165,17 @@ class DriverSerializer(serializers.HyperlinkedModelSerializer):
     trips = TripSerializer(read_only=True, many=True)
 
     class Meta:
-        model = Driver
+        model = DriverProfile
         fields = [
             'url',
             'id',
-            'first_name',
-            'last_name',
-            'email',
-            'phone',
-            'trips',
+            'user',
+            'id_number',
+            'driving_license',
+            'picture',
+            'ambulance',
+            'updated_at',
+            'availability',
         ]
 
 
@@ -189,24 +191,33 @@ class AmbulanceSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'id',
             'driver',
+            'doctor',
+            'phone',
             'number_plate',
+            'insurance',
             'available',
+            'in_transit',
             'trips',
             'ratings',
         ]
 
 
 class DoctorSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="doctors-detail")
     ambulance = AmbulanceSerializer(read_only=True)
 
     class Meta:
-        model = Doctor
+        model = DoctorProfile
         fields = [
-            'first_name',
-            'last_name',
-            'email',
-            'phone',
+            'url',
+            'id',
+            'user',
+            'picture',
             'ambulance',
+            'id_number',
+            'driving_license',
+            'availability',
+            'updated_at',
         ]
 
 
