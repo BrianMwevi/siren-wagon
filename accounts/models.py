@@ -1,4 +1,4 @@
-from sirenapp.models import CustomerAccount, Package
+from sirenapp.models import Ambulance, CustomerAccount, Doctor, Hospital, Package, Review, Trip
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.dispatch import receiver
@@ -9,6 +9,7 @@ from django.db.models.signals import post_save
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     phone = models.CharField(max_length=200, unique=True)
+
     account = models.ForeignKey(
         CustomerAccount, blank=True, related_name='account', null=True, on_delete=models.CASCADE)
 
@@ -17,6 +18,31 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'phone']
+
+
+class DriverProfile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="driver")
+    id_number = models.PositiveIntegerField(unique=True)
+    driving_license = models.CharField(max_length=55, unique=True)
+    picture = models.ImageField(
+        upload_to='images/', default="images/avatar_wqbvxp.svg")
+    ambulance = models.ForeignKey(
+        Ambulance, related_name='driver_ambulance', on_delete=models.CASCADE, null=True, blank=True)
+    hospital = models.ForeignKey(Hospital, related_name='driver_hospital',
+                                 on_delete=models.CASCADE, null=True, blank=True)
+    doctor = models.ForeignKey(Doctor, related_name='driver_doctor',
+                               on_delete=models.CASCADE, null=True, blank=True)
+    trips = models.ManyToManyField(
+        Trip, related_name='driver_trips', blank=True)
+    reviews = models.ManyToManyField(
+        Review, related_name='driver_reviews', blank=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    availability = models.BooleanField(default=False)
+    in_transit = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.user.username} > {self.driving_license}"
 
 
 class PatientProfile(models.Model):
@@ -56,8 +82,9 @@ class EmergencyContact(models.Model):
         return f"{self.first_name} {self.last_name}: {self.relationship}"
 
 
-@receiver(post_save, sender=User)
+@ receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
         account = CustomerAccount.objects.get(account_holder=instance)
-        profile = PatientProfile.objects.create(user=instance, account=account)
+        profile = PatientProfile.objects.create(
+            user=instance, account=account)
