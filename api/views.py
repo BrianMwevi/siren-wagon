@@ -8,8 +8,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.db.models import Q
 
-from sirenapp.models import CustomerAccount, Hospital, Package, Transaction, Trip, Review, Doctor, Ambulance, Driver
-from accounts.models import User, PatientProfile, EmergencyContact
+from sirenapp.models import CustomerAccount, Hospital, Package, Transaction, Trip, Review, Ambulance
+from accounts.models import DoctorProfile, DriverProfile, User, PatientProfile, EmergencyContact
 from api.serializers import EmergencyContactSerializer, PackageSerializer, HospitalSerializer, ReviewSerializer, TransactionSerializer, TripSerializer, DoctorSerializer, AmbulanceSerializer, DriverSerializer, PatientProfileSerializer, UserSerializer
 from payments.transact import initiate_transaction
 
@@ -76,8 +76,6 @@ class SuccessfulPayments(generics.ListCreateAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
-    # def perform_create
-
 
 class HospitalViewset(viewsets.ModelViewSet):
     serializer_class = HospitalSerializer
@@ -102,12 +100,18 @@ class ReviewViewset(viewsets.ModelViewSet):
 
 class DoctorViewset(viewsets.ModelViewSet):
     serializer_class = DoctorSerializer
-    queryset = Doctor.objects.all()
+    queryset = DoctorProfile.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class DriverViewset(viewsets.ModelViewSet):
     serializer_class = DriverSerializer
-    queryset = Driver.objects.all()
+    queryset = DriverProfile.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class PackageViewset(viewsets.ModelViewSet):
